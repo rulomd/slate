@@ -2,10 +2,9 @@
 title: API Reference
 
 language_tabs: # must be one of https://git.io/vQNgJ
-  - shell
+  - php
   - ruby
-  - python
-  - javascript
+  - csharp
 
 toc_footers:
   - <a href='#'>Sign Up for a Developer Key</a>
@@ -17,223 +16,212 @@ includes:
 search: true
 ---
 
-# Introduction
+# Introducción
+Bienvenido a la documentación oficial del API de PagoFacil. A través de esta guía podrás configurar los servicios de cobro necesarios para que nuestra plataforma se adapte a tu negocio de forma rápida y efectiva
 
-Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.
 
-We have language bindings in Shell, Ruby, and Python! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
+# Pagos en efectivo
+## Introducción
 
-This example API documentation page was created with [Slate](https://github.com/tripit/slate). Feel free to edit it and use it as a base for your own API's documentation.
+Nuestra API proporciona 3 métodos para implementar el proceso de pagos en efectivo en tu sitio web.
+Éstos se mencionan a continuación:
 
-# Authentication
+## Realizar una orden/cargo
 
-> To authorize, use this code:
+```php
+<?php
+$host = 'https://stapi.pagofacil.net/cash/charge';
+$params = array(
+'branch_key' => 'ba3b2748672431ebeebeed1327c14959a94a74be',
+'user_key' => 'ce4287a4093e4fca192
+8f2cde9bf041ee7de8292',
+'order_id' => 'tienda_pedro_001',
+'product' => 'camara fotografica de 15 mega pixeles',
+'amount' => '6500.99',
+'store_code' => 'OXXO',
+'customer' => 'pedro perez',
+'email' => 'pedro@pagofacil.net',
+);
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $host);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+$result = curl_exec($ch);
+curl_close($ch);
+$data = json_decode($result, true);
+?>
+```
 
 ```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
+require "net/http"
+require "uri"
+uri = URI.parse("https://stapi.pagofacil.net/cash/charge")
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+request = Net::HTTP::Post.new(uri.request_uri)
+request.set_form_data({
+"branch_key" => "ba3b2748672431ebeebeed1327c14959a94a74be",
+"user_key" => "ce4287a4093e4fca1928f2cde9bf041ee7de8292",
+"order_id" => "tienda_pedro_001",
+"product" => "camara fotografica de 15 mega pixeles",
+"amount" => "6500.99",
+"store_code" => "OXXO",
+"customer" => "pedro perez",
+"email" => "pedro@pagofacil.net"
+})
+response = http.request(request)
+puts response.body
 ```
 
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-```
-
-```shell
-# With shell, you can just pass the correct header with each request
-curl "api_endpoint_here"
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-```
-
-> Make sure to replace `meowmeowmeow` with your API key.
-
-Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our [developer portal](http://example.com/developers).
-
-Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:
-
-`Authorization: meowmeowmeow`
-
-<aside class="notice">
-You must replace <code>meowmeowmeow</code> with your personal API key.
-</aside>
-
-# Kittens
-
-## Get All Kittens
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get()
-```
-
-```shell
-curl "http://example.com/api/kittens"
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let kittens = api.kittens.get();
-```
-
-> The above command returns JSON structured like this:
-
-```json
-[
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Net;
+using System.IO;
+namespace ConsoleApplication1
+{
+  class Program
   {
-    "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
-  }
-]
+    static void Main(string[] args)
+    {
+     WebRequest request = WebRequest.Create(
+         "https://stapi.pagofacil.net/cash/charge"
+     );
+      string param =
+      "branch_key=ba3b2748672431ebeebeed1327c14959a94a74be" +
+      "&user_key=ce4287a4093e4fca1928f2cde9bf041ee7de8292" +
+      "&order_id=tienda_pedro_001" +
+      "&product=camara fotografica de 15 mega pixeles" +
+      "&amount=6500.99" +
+      "&store_code=OXXO" +
+      "&customer=pedro perez" +
+      "&email=pedro@pagofacil.net";
+      request.Method = "POST";
+      request.ContentType = "application/x-­­www-form-urlencoded";
+      request.ContentLength = param.Length;
+      byte[] paramsList = Encoding.UTF8.GetBytes(param);
+      Stream writer = request.GetRequestStream();
+      writer.Write(paramsList, 0, paramsList.Length);
+      writer.Close();
+      WebResponse response = request.GetResponse();
+      string result = (new StreamReader(response.GetResponseStream())).ReadToEnd();
+      Console.WriteLine(result);
+      response.Close();
+      }
+    }
+}
 ```
-
-This endpoint retrieves all kittens.
-
 ### HTTP Request
 
-`GET http://example.com/api/kittens`
+* Producción:
+`POST https://www.pagofacil.net/ws/public/cash/charge`
+* Stage:
+`POST https://stapi.pagofacil.net/cash/charge`
 
 ### Query Parameters
 
-Parameter | Default | Description
+Parameter | Type | Description
 --------- | ------- | -----------
-include_cats | false | If set to true, the result will also include cats.
-available | true | If set to false, the result will include kittens that have already been adopted.
+branch_key | String(100) | Api key sucursal
+user_key | String(100) | Api key usuario
+order_id | String(45) | Tú identificador para la orden de compra. NOTA: debe ser único e irrepetible para cada orden
+product | String(100) | Descripción del producto o nombre del producto
+amount | Double(8,2) | Monto (MXN) a pagar
+store_code | String(30) | Código de la tienda de conveniencia
+customer | String(100) | Nombre del comprador
+email | String(100) | E-mail del comprador
 
-<aside class="success">
-Remember — a happy kitten is an authenticated kitten!
-</aside>
+## Consultar una orden/cargo
 
-## Get a Specific Kitten
+```php
+<?php
+$host = 'https://stapi.pagofacil.net/cash/charge';
+$params = array(
+'branch_key' => 'ba3b2748672431ebeebeed1327c14959a94a74be',
+'user_key' => 'ce4287a4093e4fca192
+8f2cde9bf041ee7de8292',
+'reference' => 'reference001'
+);
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $host);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPGET, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+$result = curl_exec($ch);
+curl_close($ch);
+$charge = json_decode($result, true);
+?>
+```
 
 ```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get(2)
+require "net/http"
+require "uri"
+uri = URI.parse("https://stapi.pagofacil.net/cash/charge")
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+request = Net::HTTP::Get.new(uri.request_uri)
+request.set_form_data({
+"branch_key" => "ba3b2748672431ebeebeed1327c14959a94a74be",
+"user_key" => "ce4287a4093e4fca1928f2cde9bf041ee7de8292",
+"reference" => "reference001",
+})
+response = http.request(request)
+puts response.body
 ```
 
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get(2)
-```
-
-```shell
-curl "http://example.com/api/kittens/2"
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.get(2);
-```
-
-> The above command returns JSON structured like this:
-
-```json
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Net;
+using System.IO;
+namespace ConsoleApplication1
 {
-  "id": 2,
-  "name": "Max",
-  "breed": "unknown",
-  "fluffiness": 5,
-  "cuteness": 10
+  class Program
+  {
+    static void Main(string[] args)
+    {
+     WebRequest request = WebRequest.Create(
+         "https://stapi.pagofacil.net/cash/charge"
+     );
+      string param =
+      "branch_key=ba3b2748672431ebeebeed1327c14959a94a74be" +
+      "&user_key=ce4287a4093e4fca1928f2cde9bf041ee7de8292" +
+      "&reference=reference001" +
+      request.Method = "GET";
+      request.ContentType = "application/x-­­www-form-urlencoded";
+      request.ContentLength = param.Length;
+      byte[] paramsList = Encoding.UTF8.GetBytes(param);
+      Stream writer = request.GetRequestStream();
+      writer.Write(paramsList, 0, paramsList.Length);
+      writer.Close();
+      WebResponse response = request.GetResponse();
+      string result = (new StreamReader(response.GetResponseStream())).ReadToEnd();
+      Console.WriteLine(result);
+      response.Close();
+      }
+    }
 }
 ```
-
-This endpoint retrieves a specific kitten.
-
-<aside class="warning">Inside HTML code blocks like this one, you can't use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
-
 ### HTTP Request
 
-`GET http://example.com/kittens/<ID>`
+* Producción:
+`GET https://www.pagofacil.net/ws/public/cash/charge`
+* Stage:
+`GET https://stapi.pagofacil.net/cash/charge`
 
-### URL Parameters
+### Query Parameters
 
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to retrieve
-
-## Delete a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```shell
-curl "http://example.com/api/kittens/2"
-  -X DELETE
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.delete(2);
-```
-
-> The above command returns JSON structured like this:
-
-```json
-{
-  "id": 2,
-  "deleted" : ":("
-}
-```
-
-This endpoint retrieves a specific kitten.
-
-### HTTP Request
-
-`DELETE http://example.com/kittens/<ID>`
-
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to delete
-
+Parameter | Type | Description
+--------- | ------- | -----------
+branch_key | String(100) | Api key sucursal
+user_key | String(100) | Api key usuario
+reference | String(45) | dentificador enviado por PagoFácil al realizar una orden/cargo
