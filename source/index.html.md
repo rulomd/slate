@@ -26,6 +26,17 @@ Bienvenido a la documentación oficial del API de PagoFacil. A través de esta g
 Nuestra API proporciona 3 métodos para implementar el proceso de pagos en efectivo en tu sitio web.
 Éstos se mencionan a continuación:
 
+### Tiendas de conveniencia
+
+Establecimiento | Código | Monto máximo
+--------- | ------- | -----------
+OXXO | OXXO | 15,000.00 MXN
+Seven eleven | SEVEN_ELEVEN | 15,000.00 MXN
+Extra | EXTRA | 5,000.00 MXN
+Chedraui | CHEDRAUI | 5,000.00 MXN
+Farmacia Benavides | FARMACIA_BENAVIDES | 5,000.00 MXN
+Farmacia Esquivar | FARMACIA_ESQUIVAR | 5,000.00 MXN
+
 ## Realizar una orden/cargo
 
 ```php
@@ -225,3 +236,101 @@ Parameter | Type | Description
 branch_key | String(100) | Api key sucursal
 user_key | String(100) | Api key usuario
 reference | String(45) | dentificador enviado por PagoFácil al realizar una orden/cargo
+
+## Reporte de órdenes /cargos
+
+```php
+<?php
+$host = 'https://stapi.pagofacil.net/cash/charges';
+$params = array(
+'branch_key' => 'ba3b2748672431ebeebeed1327c14959a94a74be',
+'user_key' => 'ce4287a4093e4fca1928f2cde9bf041ee7de8292',
+'secret_key' => 's3cr3tK3y',
+'date_start' => '2017-01-01 12:00:00',
+'date_end' => '2017-01-01 12:00:00',
+);
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $host);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPGET, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+$result = curl_exec($ch);
+curl_close($ch);
+$charge = json_decode($result, true);
+?>
+```
+
+```ruby
+require "net/http"
+require "uri"
+uri = URI.parse("https://stapi.pagofacil.net/cash/charges")
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+request = Net::HTTP::Get.new(uri.request_uri)
+request.set_form_data({
+"branch_key" => "ba3b2748672431ebeebeed1327c14959a94a74be",
+"user_key" => "ce4287a4093e4fca1928f2cde9bf041ee7de8292",
+"secret_key" => "s3cr3tK3y",
+"date_start" => "2017-01-01 12:00:00",
+"date_end" => "2017-01-01 12:00:00",
+})
+response = http.request(request)
+puts response.body
+```
+
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Net;
+using System.IO;
+namespace ConsoleApplication1
+{
+  class Program
+  {
+    static void Main(string[] args)
+    {
+     WebRequest request = WebRequest.Create(
+         "https://stapi.pagofacil.net/cash/charges"
+     );
+      string param =
+      "branch_key=ba3b2748672431ebeebeed1327c14959a94a74be" +
+      "&user_key=ce4287a4093e4fca1928f2cde9bf041ee7de8292" +
+      "&reference=reference001" +
+      "&secret_key=s3cr3tK3y" +
+      "&date_start=2017-01-01 12:00:00" +
+      "&date_end=2017-01-01 12:00:00";
+      request.Method = "GET";
+      request.ContentType = "application/x-­­www-form-urlencoded";
+      request.ContentLength = param.Length;
+      byte[] paramsList = Encoding.UTF8.GetBytes(param);
+      Stream writer = request.GetRequestStream();
+      writer.Write(paramsList, 0, paramsList.Length);
+      writer.Close();
+      WebResponse response = request.GetResponse();
+      string result = (new StreamReader(response.GetResponseStream())).ReadToEnd();
+      Console.WriteLine(result);
+      response.Close();
+      }
+    }
+}
+```
+### HTTP Request
+
+* Producción:
+`GET|POST https://www.pagofacil.net/ws/public/cash/charges`
+* Stage:
+`GET|POST https://stapi.pagofacil.net/cash/charges`
+
+### Query Parameters
+
+Parameter | Type | Description
+--------- | ------- | -----------
+branch_key | String(100) | Api key sucursal
+user_key | String(100) | Api key usuario
+secret_key | String(64) | Clave privada. **NOTA**: debe solicitarla a soporte@pagofacil.net
+date_start | String(19) | Fecha inicial del reporte, formato AAAA-MM-­DD HH:MM:SS
+date_end | String(19) | Fecha inicial del reporte, formato AAAA-MM-­DD HH:MM:SS
