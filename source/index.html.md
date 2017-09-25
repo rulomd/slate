@@ -334,3 +334,146 @@ user_key | String(100) | Api key usuario
 secret_key | String(64) | Clave privada. **NOTA**: debe solicitarla a soporte@pagofacil.net
 date_start | String(19) | Fecha inicial del reporte, formato AAAA-MM-­DD HH:MM:SS
 date_end | String(19) | Fecha inicial del reporte, formato AAAA-MM-­DD HH:MM:SS
+
+# Cobro vía token
+
+Al hacer uso del webservice para realizar la integración de cobros vía token, se solicita que el envió de los parámetros sea en un formato JSON con la información requerida dependiendo de la operación que se busca ejecutar.
+
+La información se solicita que se envié de manera encriptada bajo el algoritmo de **AES 128** el cual contendrá los datos a procesar.
+La llave de cifrado se solicitará a **soporte@pagofacil.net** indicando el tema de “Llave de encriptación” indicando el nombre con el que se dio de alta en PagoFácil.
+
+Una vez que se tenga la llave de cifrado, se procederá a formar la petición en base a los parámetros de la operación que se desea ejecutar.
+Ejemplo:
+```
+{
+  idSucursal":"e147ee31531d815e2307g8o953k929ab599deb98",
+  "idUsuario":"f541b3f11f0f9b3fuhiolikof22f6d711f2af58",
+  "nombre":"Cliente",
+  "apellidos":"apellido cliente",
+  "calleyNumero":"Anatole France 311",
+  "colonia":"Polanco",
+  "municipio":"Milpa Alta",
+  "estado":"CDMX",
+  "cp":"11000",
+  "telefono":"6789543210",
+  "celular":"5565434504",
+  "email":"comprador@mail.com",
+  "numeroTarjeta":"4111111111111111",
+  "cvt":"314",
+  "mesExpiracion":"12",
+  "anyoExpiracion":"21"
+}
+```
+Esta cadena se procederá a encriptar bajo el algoritmo mencionado anteriormente y se procederá a enviarla por POST a los EndPoint indicados dependiendo de la operación.
+
+Por cada operación se mandarán 2 campos vía POST:
+- idUsuario: Se obtiene el en manager de PagoFácil.
+- data : contenido de los parámetros cifrados (este varia por cada operación).
+
+## Alta de un token:
+Se utiliza para dar de alta una tarjeta bancaria por primera vez, esta devolverá los parámetros correspondientes para proceder a realizar un pago con esta mista tarjeta.
+
+### HTTP Request
+
+* Producción:
+`POST https://www.pagofacil.net/ws/public/CobroToken/Altatoken`
+* Stage:
+`POST https://www.pagofacil.net/st/public/CobroToken/Altatoken`
+
+### Parámetros
+Campo|Tipo|Descripción|Requerido
+--------- | ------- | -----------
+nombre|varchar (60)|Nombre del titular de la tarjeta|Si
+apellidos|varchar (60)|Apellidos del titular de la tarjeta|Si
+calleyNumero|varchar (45)|Dirección del titular de la tarjeta|Si
+colonia|varchar(30)|Colonia del titular de la tarjeta|Si
+municipio|varchar (30)|Ciudad del titular de la tarjeta|Si
+estado|varchar (45)|Estado del titular de la tarjeta|Si
+cp|varchar (9)|Código Postal del titular de la tarjeta|Si
+telefono|varchar(10)|Teléfono del titular de la tarjeta|Si
+celular|varchar(10)|Numero de celular del titular de la tarjeta|Si
+email|mail (200)|Email del titular de la tarjeta|Si
+numeroTarjeta|varchar (16)|Número de cuenta|Si
+cvt|int(4)|Código de verificación de tarjeta, usualmente impreso en el área de firma de la tarjeta, utilizado para validar que la tarjeta usada pertenezca a la persona que genero la compra|Si
+mesExpiracion|int (2)|Mes de expiración de tarjeta|Si
+anyoExpiracion|int (2)|Año de expiración de tarjeta|Si
+idSucursal|Varchar(60) alfanumérico|En caso de contar con varias sucursales se podrá utilizar este identificador para distinguir las transacciones|Si
+IdUsuario|Varchar(60) alfanumérico|Sera el identificador de la empresa ante PagoFácil|Si
+
+### Respuesta
+Campo|Tipo|Descripción|Requerido
+--------- | ------- | ----------- | -----------
+token|String (26)|Referencia o número de seguimiento generada por PagoFacil|Si
+autorizado|bool(1)|Este campo nos indicara si la transacción fue exitosa (1) o declinada (0)|Si
+autorizacion|Int|No de Autorización de la bóveda. **NOTA**: Este campo sera requerido para solicitar la baja de Token.|Si
+texto|String(100)|Describe si una transacción tuvo un error o fue exitosa. *Token generado/Error en generación de Token* |Si
+error|Array|Array el cual en caso de error contiene los mensajes con el formato ‘campo’=>’error’|No
+data|Array|Array que contiene los datos que se enviaron originalmente|Si
+
+## Baja de un token:
+Dar de baja un token al cual ya no se le vayan a realizar cargos.
+
+### HTTP Request
+
+* Producción:
+`POST https://www.pagofacil.net/ws/public/CobroToken/Bajatoken`
+* Stage:
+`POST https://www.pagofacil.net/st/public/CobroToken/Bajatoken`
+
+### Parámetros
+
+Campo|Tipo|Descripción|Requerido
+--------- | ------- | ----------- | -----------
+token|Varchar (26)|Referencia o número de seguimiento generada por Pago Fácil|Si
+autorizacion|Varchar (26)|Dato generado y retornado al cliente (autorización) cuando se dio de alta el Token|Si
+idSucursal|Varchar(60)|Credenciales API|Si
+idUsuario|Varchar(60)|Credenciales API|Si
+
+### Respuesta
+Campo|Tipo|Descripción|Requerido
+--------- | ------- | ----------- | -----------
+token|String (26)|Token Eliminado|Si
+autorizado|bool(1)|Este campo nos indicara si la transacción fue exitosa (1) o declinada (0)|Si
+autorizacion|Int|Número requerido para dar de baja un token.|Si
+texto|String(100)|Describe si una transacción tuvo un error o fue exitosa:|Token generado eliminado/Error en eliminación de Token|Si
+error|Array|Array el cual en caso de error contiene los mensajes con el formato ‘campo’=>’error’|No
+data|Array|Array que contiene los datos que se enviaron originalmente|Si
+
+## Realizar cobro a la tarjeta bancaria.
+
+Realizar un cobro a una tarjeta bancaria.
+
+### HTTP Request
+
+* Producción: `POST https://www.pagofacil.net/ws/public/CobroToken/Transacciontoken`
+* Stage:
+`POST https://www.pagofacil.net/st/public/CobroToken/Transacciontoken`
+
+### Parámetros
+
+Campo|Tipo|Descripción|Requerido
+--------- | ------- | ----------- | -----------
+idSucursal|varchar (100)|Credenciales API|Si
+idUsuario|varchar (100)|Credenciales API|Si
+token|varchar (26)|Dato proporcionado al cliente al Tokenizar Tarjeta|Si
+monto|Decimal|El monto (MXP) del cargo a la tarjeta|Si
+idPedido|varchar(60)|Campo para que el establecimiento pueda ligar la transacción con algún identificador de su producto o servicio. Nota: es importante que sea único este identificador|No
+param1|varchar(60)|Variable adicional de uso especificado por el comercio|No
+param2|varchar(60)|Variable adicional de uso especificado por el comercio|No
+param3|varchar(60)|Variable adicional de uso especificado por el comercio|No
+param4|varchar(60)|Variable adicional de uso especificado por el comercio|No
+param5|varchar(60)|Variable adicional de uso especificado por el comercio|No
+
+### Respuesta
+
+Campo|Tipo|Descripción|Requerido
+--------- | ------- | ----------- | -----------
+Token|String (26)|Token de la tarjeta del cliente|Si
+autorizado|Bool (1)|Este campo nos indicara si la transacción fue exitosa (1) o declinada (0)|Si
+Transaccion|String(50)|Identificador de PagoFácil para la transacción realizada|No
+texto|String(100)|Describe si una transacción tuvo un error o fue exitosa|No
+error|array|Array el cual en caso de error contiene los mensajes con el formato ‘campo’=>’error’|No
+mode|Nvarchar (1)|Indica si la transacción se realizó en el entorno de prueba (R) o producción (P)|No
+transIni|DateTime(22)|Hora en la que la transacción inicio|No
+transFin|DateTime(22)|Hora en la que la transacción finalizo|No
+data|Array|Array que contiene los datos que se enviaron originalmente|Si
