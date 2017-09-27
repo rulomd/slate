@@ -340,6 +340,259 @@ https://stcore.pagofacil.net/Wsrtransaccion/?method=transaccion&data[nombre]=Jua
 https://stcore.pagofacil.net/Wsrtransaccion/index/format/json?method=transaccion&data[nombre]=Juan&data[apellidos]=Lopez&data[numeroTarjeta]=5579567890123456&data[cvt]=123&data[cp]=11560&data[mesExpiracion]=10&data[anyoExpiracion]=15&data[monto]=100&data[idSucursal]=1&data[idUsuario]=1&data[idServicio]=3&data[email]=comprador@correo.com&data[telefono]=5550220910&data[celular]=5550123456&data[calleyNumero]=Anatole France 311&data[colonia]=Polanco&data[municipio]=Miguel Hidalgo&data[estado]=Distrito Federal&data[pais]=Mexico&data[param1]=&data[param2]=&data[param3]=&data[param4]=&data[param5]=
 `
 
+### JSON
+- url: https://stcore.pagofacil.net/Wsjtransaccion/
+- method: POST
+```php
+{
+  "jsonrpc": "2.0",
+  "method": "transaccion",
+  "params": {
+    "data": {
+    "nombre": "Juan",
+    "apellidos": "Lopez",
+    "numeroTarjeta":
+    "5579567890123456", "cvt": "123",
+    "cp": "11560",
+    "mesExpiracion": "10",
+    "anyoExpiracion":
+    "15", "monto": "100",
+    "idSucursal": "1",
+    "idUsuario": "1",
+    "idServicio": "3",
+    "email": "comp
+    rador@correo.com",
+    "telefono": "5550220910",
+    "celular": "5550123456",
+    "calleyNumero": "Anatole France
+    311", "colonia": "Polanco",
+    "municipio": "Miguel Hidalgo",
+    "estado": "Distrito
+    Federal", "pais": "Mexico",
+    "param1":  "",
+    "param2":  "",
+    "param3":  "",
+    "param4":  "",
+    "param5": ""
+    }
+  },
+  "id": "test"
+}
+```
+
+```csharp
+{
+  "jsonrpc": "2.0",
+  "method": "transaccion",
+  "params": {
+    "data": {
+    "nombre": "Juan",
+    "apellidos": "Lopez",
+    "numeroTarjeta":
+    "5579567890123456", "cvt": "123",
+    "cp": "11560",
+    "mesExpiracion": "10",
+    "anyoExpiracion":
+    "15", "monto": "100",
+    "idSucursal": "1",
+    "idUsuario": "1",
+    "idServicio": "3",
+    "email": "comp
+    rador@correo.com",
+    "telefono": "5550220910",
+    "celular": "5550123456",
+    "calleyNumero": "Anatole France
+    311", "colonia": "Polanco",
+    "municipio": "Miguel Hidalgo",
+    "estado": "Distrito
+    Federal", "pais": "Mexico",
+    "param1":  "",
+    "param2":  "",
+    "param3":  "",
+    "param4":  "",
+    "param5": ""
+    }
+  },
+  "id": "test"
+}
+```
+
+```ruby
+{
+  "jsonrpc": "2.0",
+  "method": "transaccion",
+  "params": {
+    "data": {
+    "nombre": "Juan",
+    "apellidos": "Lopez",
+    "numeroTarjeta":
+    "5579567890123456", "cvt": "123",
+    "cp": "11560",
+    "mesExpiracion": "10",
+    "anyoExpiracion":
+    "15", "monto": "100",
+    "idSucursal": "1",
+    "idUsuario": "1",
+    "idServicio": "3",
+    "email": "comp
+    rador@correo.com",
+    "telefono": "5550220910",
+    "celular": "5550123456",
+    "calleyNumero": "Anatole France
+    311", "colonia": "Polanco",
+    "municipio": "Miguel Hidalgo",
+    "estado": "Distrito
+    Federal", "pais": "Mexico",
+    "param1":  "",
+    "param2":  "",
+    "param3":  "",
+    "param4":  "",
+    "param5": ""
+    }
+  },
+  "id": "test"
+}
+```
+
+## Acceso CURL
+Otra forma de consumir el servicio es mediante la librería curl.
+
+```php
+<?php
+$data = array(
+  'idServicio' => urlencode('3'),
+  'idSucursal' => urlencode('tusapis'),
+  'idUsuario' => urlencode('tusapis '),
+  'nombre' => urlencode("nombre tarjeta"),
+  'apellidos' => urlencode("apellidos tarjeta"),
+  'numeroTarjeta' => urlencode("numero tarjeta"),
+  'cvt' => urlencode("cvt o cvv"),
+  'cp' => urlencode("cp"),
+  'mesExpiracion' => urlencode("12"),
+  'anyoExpiracion' => urlencode("15"),
+  'monto' => urlencode(rand(10, 100)),
+  'email' => urlencode("mail@asdf.com"),
+  'telefono' => urlencode("5555555555"),
+  'celular' => urlencode("2222222222"),
+  'calleyNumero' => urlencode("Calle"),
+  'colonia' => urlencode("Colonia"),
+  'municipio' => urlencode("Municipio"),
+  'estado' => urlencode("Estado de México"),
+  'pais' => urlencode("México"),
+  'idPedido' => urlencode(“Identificador Empresa”),
+  'param1' => urlencode(“opcional”),
+  'param2' => urlencode(“opcional”),
+  'param3' => urlencode(“opcional”),
+  'param4' => urlencode(“opcional”),
+  'param5' => urlencode(“opcional”),
+  'ip' => urlencode($_SERVER['REMOTE_ADDR']),
+  'httpUserAgent' => urlencode($_SERVER['HTTP_USER_AGENT'])
+);
+$cadena='';
+foreach ($data as $key=>$valor){
+  $cadena.="&data[$key]=$valor";
+}
+$url = 'https://stcore.pagofacil.net/Wsrtransaccion/index/format/json/?method=transaccion'.$cadena;
+echo $url;
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); //
+Blindly accept the certificate curl_setopt($ch,
+CURLOPT_SSL_VERIFYPEER, false);
+$response = curl_exec($ch);
+curl_close($ch);
+echo "<br><br><br><br>Respuesta
+Curl:<br><br>"; var_dump($response);
+echo "<br><br><br><br>PHP array<br><br>";
+$response = json_decode($response,true);
+$response=$response['WebServices_Transacciones']['transaccion'];
+echo("<pre>" . print_r($response, true) . "</pre>");
+$valido = $response['autorizado'];
+echo "autorizado:".$response['autorizado']." valido: $valido";
+exit();
+?>
+```
+
+## Verificar una transacción.
+
+```csharp
+{
+  "jsonrpc": "2.0",
+  "method": "verificar",
+  "params": {
+    "data": {
+      "idPedido": "797",
+      "idSucursal": "{
+      api_key}",
+      "idUsuario": "{api_key}",
+    }
+  },
+  "id": "test"
+}
+```
+
+```ruby
+{
+  "jsonrpc": "2.0",
+  "method": "verificar",
+  "params": {
+    "data": {
+      "idPedido": "797",
+      "idSucursal": "{
+      api_key}",
+      "idUsuario": "{api_key}",
+    }
+  },
+  "id": "test"
+}
+```
+
+```php
+{
+  "jsonrpc": "2.0",
+  "method": "verificar",
+  "params": {
+    "data": {
+      "idPedido": "797",
+      "idSucursal": "{api_key}",
+      "idUsuario": "{api_key}",
+    }
+  },
+  "id": "test"
+}
+```
+
+De la misma forma como consumimos el servicio de transacción, en esta ocasión utilizaremos el servicio de verificar, esta acción me permite consultar el ultimo resultado de una transacción con el identificador indicado, esto es por si necesito consultar el número de autorización del banco y numero de transacción por parte de PagoFácil o simplemente verificar el resultado de la transacción.
+
+### Parámetros
+Variable| Descripción | Requerido | Longitud | Categoría
+--------|--------|--------|--------|--------
+idSucursal|En caso de contar con varias sucursales se podrá utilizar este identificador para distinguir las transacciones|Si|varchar(60) alfanumérico sin espacios|Establecimiento
+idUsuario|Sera el identificador de la empresa ante PagoFácil|Si|varchar(60) alfanumérico sin espacios|Establecimiento
+idPedido|Identificador que se proporcionó para ligar la transacción de PagoFácil con la transacción del comercio|No|varchar(60) alfanumérico sin espacios|Establecimiento
+
+### Rest (XML)
+`https://www.pagofacil.net/ws/public/Wsrtransaccion/index/?method=verifica
+r&data[idPedido]=3328&data[idUsuario]=apikey&data[idSucursal]=apikey`
+
+### Rest (JSON)
+`https://stcore.pagofacil.net/Wsrtransaccion/index/format/json/?method=verificar&data[idPedido]=3328&data[idUsuario]=apikey&data[idSucursal]=apikey`
+
+### JSON
+- url: https://stcore.pagofacil.net/Wsjtransaccion/
+- method: POST
+
+## Meses sin intereses
+
+Para realizar meses sin intereses deben agregar 2 parámetros más a la petición, a
+continuación se listan:
+- `name: plan
+value: MSI (meses sin intereses) ó NOR (normal, en el caso que la transacción NO es
+en meses sin intereses).`
+- `name: mensualidades
+value: XX (formato de 2 caracteres numéricos, p.e. 03, 06, 09, 12, etc.)`
+
+
 # Cargos Recurrentes
 ## Ambientes
 
